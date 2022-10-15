@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    edit Note
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block links %}
+    <a href="{{ url_for('homepage') }}">Homepage</a>&nbsp;&nbsp;
+    <a href="{{ url_for('contents') }}">Contents</a>&nbsp;&nbsp;
+    <a href="{{ url_for('notes') }}">Notes</a>&nbsp;&nbsp;
+    <a href="{{ url_for('search') }}">Search</a>
+{% endblock %}
+
+{% block body %}
+    <div style="text-align: center;">
+        <h4>Edit Note</h4>        
+        <form action="{{ url_for('editnotes', note_id=note.id) }}" method="POST" id="login_form">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="key"><span class="requirement">*</span>Key</label>
+                        <input type="text" class="form-control" id="key" name="key" autofocus value="{{ note.key }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value1"><span class="requirement">*</span>Value 1</label>
+                        <input type="text" class="form-control" id="value1" name="value1" value="{{ note.value1 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value2">Value 2</label>
+                        <input type="text" class="form-control" id="value2" name="value2" value="{{ note.value2 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value3">Value 3</label>
+                        <input type="text" class="form-control" id="value3" name="value3" value="{{ note.value3 }}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="value4">Value 4</label>
+                        <input type="text" class="form-control" id="value4" name="value4" value="{{ note.value4 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value5">Value 5</label>
+                        <input type="text" class="form-control" id="value5" name="value5" value="{{ note.value5 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value6">Value 6</label>
+                        <input type="text" class="form-control" id="value6" name="value6" value="{{ note.value6 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value7">Value 7</label>
+                        <input type="text" class="form-control" id="value7" name="value7" value="{{ note.value7 }}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="value8">Value 8</label>
+                        <input type="text" class="form-control" id="value8" name="value8" value="{{ note.value8 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value9">Value 9</label>
+                        <input type="text" class="form-control" id="value9" name="value9" value="{{ note.value9 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value10">Value 10</label>
+                        <input type="text" class="form-control" id="value10" name="value10" value="{{ note.value10 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value11">Value 11</label>
+                        <input type="text" class="form-control" id="value11" name="value11" value="{{ note.value11 }}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="value12">Value 12</label>
+                        <input type="text" class="form-control" id="value12" name="value12" value="{{ note.value12 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value13">Value 13</label>
+                        <input type="text" class="form-control" id="value13" name="value13" value="{{ note.value13 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value14">Value 14</label>
+                        <input type="text" class="form-control" id="value14" name="value14" value="{{ note.value14 }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="value15">Value 15</label>
+                        <input type="text" class="form-control" id="value15" name="value15" value="{{ note.value15 }}">
+                    </div>
+                </div>
+            </div><br>
+            <button class="btn btn-primary">Update</button>
+        </form>
+        {% if note_update_error %}
+            <div style="color: red;">{{ note_update_error }}</div>
+        {% else %}
+            <br>
+        {% endif %}
+        <a href="{{ url_for('notes') }}">Cancel</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends 'layout.html' %}
+
+{% block title %}    
+    Contents
+{% endblock %}
+
+{% block style %}
+<style>
+    #content_heading > div {font-weight: bold;}
+    #contents {
+        font-size: large;
+    }
+</style>
+{% endblock %}
+
+
+{% block links %}
+    <a href="{{ url_for('homepage') }}">Homepage</a>&nbsp;&nbsp;
+    <a href="{{ url_for('notes') }}">Notes</a>&nbsp;&nbsp;
+    <a href="{{ url_for('search') }}">Search</a>
+{% endblock %}
+
+{% block body %}
+<div style="text-align: center; padding: 5px;">
+    <h3>Contents</h3>
+    <hr>
+    <div class="row" id="content_heading">        
+        <div class="col-lg-1">Chapter</div>
+        <div class="col-lg-2">Words</div>
+        <div class="col-lg-2">Verbs</div>
+        <div class="col-lg-2">Topic</div>
+        <div class="col-lg-2">Sub-Topic</div>
+        <div class="col-lg-2">Meanings</div>
+        <div class="col-lg-1">
+            {% if admin %}
+                <a href="" onclick="addcontent(); return false;">ADD</a>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+    <div id="addContent"></div>
+    <div id="chapters"></div>
+        
+</div>
+{% endblock %}
+
+
+{% block script %}
+<script src="{{ url_for('static', filename='contents.js') }}"></script>
+    <script src="{{ url_for('static', filename='allsockets.js') }}"></script>
+
+<script id="addContentDiv" type="text/x-handlebars-template">
+    <form onsubmit="addNewContent(); return false;">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label for="chapter"><span class="requirement">*</span>Chapter</label>
+                    <input type="text" class="form-control" id="chapter" name="chapter">
+                </div>
+                <div class="form-group">
+                    <label for="words"><span class="requirement">*</span>Words</label>
+                    <input type="text" class="form-control" id="words" name="words">
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label for="verbs"><span class="requirement">*</span>Verbs</label>
+                    <input type="text" class="form-control" id="verbs" name="verbs">
+                </div>
+                <div class="form-group">
+                    <label for="cases">Topic</label>
+                    <input type="text" class="form-control" id="cases" name="cases">
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label for="compound">Sub-Topic</label>
+                    <input type="text" class="form-control" id="compound" name="compound">
+                </div>
+                <div class="form-group">
+                    <label for="suffix">Suffix</label>
+                    <input type="text" class="form-control" id="suffix" name="suffix" value="" disabled>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label for="meanings"><span class="requirement">*</span>Meanings</label>
+                    <input type="text" class="form-control" id="meanings" name="meanings">
+                </div>
+            </div>
+        </div>
+        <button id="addContentButton" type="submit" class="btn btn-success btn-sm">Add</button>
+        <button id="cancelAddContentButton" onclick="cancelAddContent(); return false;" class="btn btn-danger btn-sm">Cancel</button>
+    </form>
+    <hr>
+</script>
+
+
+<script id="content_row" type="text/x-handlebars-template">
+    {% raw -%}
+        {{#each contents }}
+            <div class="row" id="contents">                
+                <div class="col-lg-1">
+                    {{ this.chapter }}
+                </div>
+                <div class="col-lg-2">
+                    {{ this.words }}
+                </div>
+                <div class="col-lg-2">
+                    {{ this.verbs }}
+                </div>
+                <div class="col-lg-2">
+                    {{ this.case }}
+                </div>
+                <div class="col-lg-2">
+                    {{#if this.suffix }}
+                        {{ this.suffix }}
+                    {{else}}
+                        {{ this.compound }}
+                    {{/if}}
+                </div>
+                <div class="col-lg-2">
+                    {{ this.meanings }}
+                </div>
+                <div class="col-lg-1">
+                    <a href="contents/chapter/{{this.chapter}}">View</a>
+                </div>
+            </div>
+            <hr>
+        {{/each}}
+    {%- endraw %}
+</script>
+{% endblock %}
+
+{% block alerts %}
+    <div id="counter_div" style="display: none;">
+        <div>
+            New Messages
+        </div>
+        <div>
+            <span id="newPvtMsgs" style="color: green; font-weight: bold;"></span>
+        </div>
+    </div>
+{% endblock %}

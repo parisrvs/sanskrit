@@ -1,0 +1,142 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Notes
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block links %}
+    <a href="{{ url_for('homepage') }}">Homepage</a>&nbsp;&nbsp;
+    <a href="{{ url_for('contents') }}">Contents</a>&nbsp;&nbsp;
+    <a href="{{ url_for('search') }}">Search</a>
+{% endblock %}
+
+{% block body %}
+<div style="text-align: center;">
+    <h3>Notes</h3>
+    {% if admin %}
+        <div>
+            <a href="{{ url_for('addnote') }}">Add</a>            
+        </div>
+    {% endif %}
+    <hr>
+    <div class="row">
+        <div class="col-lg-2">
+            <a id="showallnotes" href="" onclick="selectAllNotes(); return false;">Show All</a><br>
+            {% for keys in notes %}
+                <div id="note_{{keys.id}}">
+                    <a href="" onclick="selectNotes('{{keys.key}}'); return false;">{{keys.key}}</a>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-lg-10">
+            {% for note in notes %}
+                <div data-note="{{note.key}}" class="notes" id="{{note.id}}">
+                    <div><b><span style="font-size: large;">{{note.key}}</span></b></div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            {% if note.value1 and note.value1 != '-' %}
+                                {{note.value1}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value2 and note.value2 != '-' %}
+                                {{note.value2}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value3 and note.value3 != '-' %}
+                                {{note.value3}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value4 and note.value4 != '-' %}
+                                {{note.value4}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value5 and note.value5 != '-' %}
+                                {{note.value5}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value6 and note.value6 != '-' %}
+                                {{note.value6}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value7 and note.value7 != '-' %}
+                                {{note.value7}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value8 and note.value8 != '-' %}
+                                {{note.value8}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value9 and note.value9 != '-' %}
+                                {{note.value9}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value10 and note.value10 != '-' %}
+                                {{note.value10}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value11 and note.value11 != '-' %}
+                                {{note.value11}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value12 and note.value12 != '-' %}
+                                {{note.value12}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value13 and note.value13 != '-' %}
+                                {{note.value13}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value14 and note.value14 != '-' %}
+                                {{note.value14}}
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4">
+                            {% if note.value15 and note.value15 != '-' %}
+                                {{note.value15}}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if admin %}
+                        <a href="{{ url_for('editnotes', note_id=note.id) }}">Edit</a>&nbsp;&nbsp;
+                        <a href="" onclick="deletenote(this, '{{note.id}}'); return false;">Delete</a>
+                    {% endif %}
+                    <hr>
+                </div>
+            {% endfor %}
+        </div>
+    </div>    
+</div>
+{% endblock %}
+
+
+{% block script %}
+    <script src="{{ url_for('static', filename='notes.js') }}"></script>
+    <script src="{{ url_for('static', filename='allsockets.js') }}"></script>
+{% endblock %}
+
+{% block alerts %}
+    <div id="counter_div" style="display: none;">
+        <div>
+            New Messages
+        </div>
+        <div>
+            <span id="newPvtMsgs" style="color: green; font-weight: bold;"></span>
+        </div>
+    </div>
+{% endblock %}

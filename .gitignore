@@ -1,0 +1,9 @@
+env
+__pycache__
+flask_session
+csvfiles
+test.py
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

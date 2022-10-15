@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    edit content
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block links %}
+    <a href="{{ url_for('homepage') }}">Homepage</a>&nbsp;&nbsp;
+    <a href="{{ url_for('contents') }}">Contents</a>&nbsp;&nbsp;
+    <a href="{{ url_for('notes') }}">Notes</a>&nbsp;&nbsp;
+    <a href="{{ url_for('search') }}">Search</a>
+{% endblock %}
+
+{% block body %}
+    <div style="text-align: center;">
+        <h4>Chapter Number: {{ content.chapter }}</h4>
+        <br><br>
+        <form action="{{ url_for('editcontent', chapter_id=content.chapter) }}" method="POST" id="login_form">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="words"><span class="requirement">*</span>Words</label>
+                        <input type="text" class="form-control" id="words" name="words" autofocus value="{{ content.words }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="verbs"><span class="requirement">*</span>Verbs</label>
+                        <input type="text" class="form-control" id="verbs" name="verbs" value="{{ content.verbs }}">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="case">Topic</label>
+                        <input type="text" class="form-control" id="case" name="case" autofocus value="{{ content.case }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="compound">Sub-Topic</label>
+                        <input type="text" class="form-control" id="compound" name="compound" value="{{ content.compound }}">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="suffix">Suffix</label>
+                        <input type="text" class="form-control" id="suffix" name="suffix" autofocus value="{{ content.suffix }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="meanings"><span class="requirement">*</span>Meanings</label>
+                        <input type="text" class="form-control" id="meanings" name="meanings" value="{{ content.meanings }}">
+                    </div>
+                </div>
+            </div><br>
+            <button class="btn btn-primary">Update</button>
+        </form>
+        {% if content_update_error %}
+            <div style="color: red;">{{ content_update_error }}</div>
+        {% else %}
+            <br>
+        {% endif %}
+        <a href="{{ url_for('chapter', chapter_id=content.chapter) }}">Cancel</a>
+    </div>
+{% endblock %}

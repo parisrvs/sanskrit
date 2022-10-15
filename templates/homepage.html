@@ -1,0 +1,114 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    {{user.username}}
+{% endblock %}
+
+{% block style %}
+    <link href="{{ url_for('static', filename='homepage.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block links %}
+    <a href="{{ url_for('contents') }}">Contents</a>&nbsp;&nbsp;
+    <a href="{{ url_for('notes') }}">Notes</a>&nbsp;&nbsp;
+    <a href="{{ url_for('search') }}">Search</a>
+{% endblock %}
+
+{% block body %}
+    {% if user %}
+        <div id="userDiv">
+            <div class="row" id="chatrow">
+                <div class="col-lg-6">
+                    <div id="chats">
+                    </div>
+                    <div class="form-group">                        
+                        <textarea type="text" class="form-control" id="message" autofocus></textarea>
+                    </div>
+                    <div id="submitChatButton">
+                        <button id="submitChat" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+                    <div id="updateChatButton" style="display: none;">
+                        <button id="updateChat" class="btn btn-success btn-sm">Update</button>
+                        <button onclick="cancelUpdateChat(); return false;" class="btn btn-danger btn-sm">Cancel</button>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div id="pvtChats"></div>
+                    <div class="form-group">
+                        <textarea type="text" class="form-control" id="pvtmessage"></textarea>
+                    </div>
+                    <div id="submitPvtChatButton">
+                        <button id="submitPvtChat" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+                    <div id="updatePvtChatButton" style="display: none;">
+                        <button id="updatePvtChat" class="btn btn-success btn-sm">Update</button>
+                        <button onclick="cancelUpdatePvtChat(); return false;" class="btn btn-danger btn-sm">Cancel</button>
+                    </div>
+                </div>
+                <div class="col-lg-2">                    
+                    <div id="users" style="text-align: left;">                        
+                    </div>
+                    <div style="padding: 15px;">
+                    <button id="listAllUsers" class="btn btn-warning btn-sm">All Users</button>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    {% else %}
+        <div style="text-align: center;">
+            <br><br>
+            <h3><a href="{{ url_for('login') }}">Login</a> to view this page.</h3>
+        </div>        
+    {% endif %}
+{% endblock %}
+
+
+{% block script %}
+    <script src="{{ url_for('static', filename='homepage.js') }}"></script>
+    <script type="text/x-handlebars-template" id="myChatMessageTemplate">
+        {% raw -%}
+            <div class="chatMessageBlock" id="{{chat_id}}">
+                <div id="chat_{{chat_id}}">{{message}}</div>
+                <div style="font-size: small;">
+                    {{username}} - {{time}}
+                    <a href="" id="deleteChatId_{{chat_id}}" onclick="deletechat('{{chat_id}}'); return false;">Delete</a>
+                    <a href="" onclick="editchat('{{chat_id}}'); return false;">Edit</a>
+                </div>
+            </div>            
+        {%- endraw %}
+    </script>
+    <script type="text/x-handlebars-template" id="myPvtChatMessageTemplate">
+        {% raw -%}
+            <div class="chatMessageBlock" id="{{chat_id}}">
+                <div id="chat_{{chat_id}}">{{message}}</div>
+                <div style="font-size: small;">
+                    {{username}} - {{time}}
+                    <a href="" id="deleteChatId_{{chat_id}}" onclick="deletechat('{{chat_id}}'); return false;">Delete</a>
+                    <a href="" onclick="editpvtchat('{{chat_id}}'); return false;">Edit</a>
+                </div>
+            </div>            
+        {%- endraw %}
+    </script>
+    <script type="text/x-handlebars-template" id="chatMessageTemplate">
+        {% raw -%}
+            <div class="chatMessageBlock" id="{{chat_id}}">
+                <div id="chat_{{chat_id}}">{{message}}</div>
+                <div style="font-size: small;">
+                    {{username}} - {{time}}
+                </div>
+            </div>            
+        {%- endraw %}
+    </script>
+    <script type="text/x-handlebars-template" id="connectedUsersTemplate">
+        {% raw -%}
+            {{#each users}}
+                <div>
+                    <a href="" data-username="{{this}}" onclick="selectUser(this); return false;">
+                        <span id="{{this}}" data-username="{{this}}" style="color: green;" class="allusers">{{this}}</span>
+                    </a>
+                    <span id="counter_{{this}}" style="color: red;"></span>
+                </div>
+            {{/each}}
+        {%- endraw %}
+    </script>
+{% endblock %}

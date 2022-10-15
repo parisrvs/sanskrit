@@ -1,0 +1,986 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Chapter {{ content['content'].chapter }}
+{% endblock %}
+
+{% block style %}
+<style>
+    .aphorisms {padding: 5px; font-size: large;}
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .container > div {
+        font-size: large;
+        margin: 10px;
+        padding: 10px;
+    }
+    #meanings {
+        padding: 5px;
+        font-size: large;
+        text-align: center;
+    }
+    #allmeanings > div {
+        padding: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block links %}
+    <a href="{{ url_for('homepage') }}">Homepage</a>&nbsp;&nbsp;
+    <a href="{{ url_for('contents') }}">Contents</a>&nbsp;&nbsp;
+    <a href="{{ url_for('notes') }}">Notes</a>&nbsp;&nbsp;
+    <a href="{{ url_for('search') }}">Search</a>
+{% endblock %}
+
+{% block body %}
+<div style="text-align: center;" class="row">
+    <div class="col-lg-4">
+        <a href="{{ url_for('chapter', chapter_id=(content['content'].chapter)-1) }}">Previous Chapter</a>
+    </div>
+    <div class="col-lg-4">
+        <b>Chapter <span id="ChapterNumber">{{ content['content'].chapter }}</span></b>
+        {% if admin %}
+        &nbsp;&nbsp;<a href="" data-chapter="{{content['content'].chapter}}" onclick="deleteChapter(this); return false;">Delete</a>
+        {% endif %}
+    </div>
+    <div class="col-lg-4">
+        <a href="{{ url_for('chapter', chapter_id=(content['content'].chapter)+1) }}">Next Chapter</a>
+    </div>
+</div>
+<hr>
+<div style="text-align: center;">
+    <span><a href="#noun_cases">{{ content['content'].words }}</a></span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <span><a href="#verb_forms">{{ content['content'].verbs }}</a></span>&nbsp;&nbsp;|&nbsp;&nbsp;
+
+    {% if content['content'].case %}
+        <span>{{ content['content'].case }}</span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    {% endif %}
+
+    {% if content['content'].compound %}
+        <span>{{ content['content'].compound }}</span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    {% endif %}
+
+    {% if content['content'].suffix %}
+        <span>{{ content['content'].suffix }}</span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    {% endif %}
+
+    <span><a href="#meanings">{{ content['content'].meanings }}</a></span>
+    {% if admin %}
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{ url_for('editcontent', chapter_id=content['content'].chapter) }}"><span class="editlinks">Edit</span></a>
+    {% endif %}
+</div>
+<hr>
+<div>
+    <div style="text-align: center;">
+        <h5>Grammar</h5>
+        {% if admin %}
+            <a onclick="addNewRuleLink(this); return false;" data-chapter="{{content['content'].chapter}}" href="">Add</a>
+        {% endif %}
+    </div>
+    <div id="addNewRuleDiv"></div>
+    <ul id="allrules">
+        {% for li in content['aphorisms'] %}
+            <li class="aphorisms" id="aphorism_{{li.id}}">
+                <span id="ruleNumber_{{ li.id }}" style="color: darkgreen; font-weight: bold;">{{ li.rule_number }}</span>&nbsp;&nbsp;
+                <span id="topic_{{li.id}}" style="color: tomato;">{{ li.topic }}</span>&nbsp;&nbsp;
+                <span id="subtopic_{{li.id}}" style="color: brown;">{{ li.subtopic }}</span>&nbsp;&nbsp;
+                <span id="rule_{{li.id}}">{{ li.rule }}</span>
+                {% if admin %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <a class="toDisable" data-aphorism_id="{{ li.id }}" onclick="editaphorism(this, '{{li.chapter}}'); return false;" href="">
+                        <span class="editlinks">Edit</span>
+                    </a>&nbsp;&nbsp;
+                    <a href="" onclick="deleteRule('{{li.id}}'); return false;" class="toDisable">
+                        <span class="editlinks">Delete</span>
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+<hr>
+<div style="text-align: center;">
+    <div>Words</div>    
+    {% if admin %}
+        <a data-chapter="{{content['content'].chapter}}" onclick="addWordHeader(this); return false;" href="">Add</a>
+    {% endif %}
+</div>
+<div id="wordHeaderDiv"></div>
+<div class="row" style="text-align: center; font-size: large;" id="noun_cases">
+    {% for word in content['words'] %}
+        <div class="col-lg-4" id="word_{{word.id}}">
+            <div>
+                <span style="color: blue;">{{word.word}}</span>&nbsp;-&nbsp;
+                <span style="color: deeppink;">({{ word.meaning }})</span><br>
+                
+                {% if word.gender and word.gender != '-' %}
+                    <span style="color: darkgreen;">Gender: {{ word.gender }}</span>&nbsp;&nbsp;
+                {% endif %}
+
+                {% if word.form and word.form != '-' %}
+                    <span style="color: darkorange;">Form: {{ word.form }}</span><br>
+                {% endif %}
+
+                {% if word.info and word.info != '-' %}
+                    <span>{{ word.info }}</span><br>
+                {% else %}<br>{% endif %}
+
+                {% if admin %}
+                    <a href="{{ url_for('editword', word_id=word.id) }}"><span class="editlinks">Edit</span></a>&nbsp;&nbsp;
+                    <a href="" onclick="deleteWord('{{word.id}}'); return false;">
+                        <span class="editlinks">Delete</span>
+                    </a>
+                {% endif %}
+            </div>
+            <table class="table">
+                <tr>
+                    <td>{% if word.nominative1 != '-' %}{{ word.nominative1 }}{% endif %}</td>
+                    <td>{% if word.nominative2 != '-' %}{{ word.nominative2 }}{% endif %}</td>
+                    <td>{% if word.nominative3 != '-' %}{{ word.nominative3 }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>{% if word.accusative1 != '-' %}{{ word.accusative1 }}{% endif %}</td>
+                    <td>{% if word.accusative2 != '-' %}{{ word.accusative2 }}{% endif %}</td>
+                    <td>{% if word.accusative3 != '-' %}{{ word.accusative3 }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>{% if word.instrumental1 != '-' %}{{ word.instrumental1 }}{% endif %}</td>
+                    <td>{% if word.instrumental2 != '-' %}{{ word.instrumental2 }}{% endif %}</td>
+                    <td>{% if word.instrumental3 != '-' %}{{ word.instrumental3 }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>{% if word.dative1 != '-' %}{{ word.dative1 }}{% endif %}</td>
+                    <td>{% if word.dative2 != '-' %}{{ word.dative2 }}{% endif %}</td>
+                    <td>{% if word.dative3 != '-' %}{{ word.dative3 }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>{% if word.ablative1 != '-' %}{{ word.ablative1 }}{% endif %}</td>
+                    <td>{% if word.ablative2 != '-' %}{{ word.ablative2 }}{% endif %}</td>
+                    <td>{% if word.ablative3 != '-' %}{{ word.ablative3 }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>{% if word.genitive1 != '-' %}{{ word.genitive1 }}{% endif %}</td>
+                    <td>{% if word.genitive2 != '-' %}{{ word.genitive2 }}{% endif %}</td>
+                    <td>{% if word.genitive3 != '-' %}{{ word.genitive3 }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td>{% if word.locative1 != '-' %}{{ word.locative1 }}{% endif %}</td>
+                    <td>{% if word.locative2 != '-' %}{{ word.locative2 }}{% endif %}</td>
+                    <td>{% if word.locative3 != '-' %}{{ word.locative3 }}{% endif %}</td>
+                </tr>
+            </table>
+        </div>
+    {% endfor %}
+</div>
+<hr>
+<div style="text-align: center;">
+    <div>Verbs</div>
+    {% if admin %}
+        <div>
+            <a data-chapter="{{content['content'].chapter}}" onclick="addverb(this); return false;" href="">Add</a>
+        </div>
+    {% endif %}
+</div>
+<div id="addVerbHeaderDiv"></div>
+<div style="text-align: center; font-size: large;" id="verb_forms">
+    {% for verb in content['verbs'] %}
+    <div id="verb_{{verb.id}}">
+        <div id="verbHeader_{{verb.id}}">
+            <span id="verbName_{{verb.id}}" style="color: darkgreen;">{{verb.verb}}</span>&nbsp;&nbsp;
+            (<span style="color: firebrick;" id="verbMeaning_{{verb.id}}">{{ verb.meaning }}</span>)&nbsp;&nbsp;&nbsp;&nbsp;
+
+            {% if verb.verbClass %}
+                <span style="color: darkmagenta;">Class (गण):</span>&nbsp;
+                <span id="verbClass_{{verb.id}}" style="color: darkmagenta;">{{ verb.verbClass }}</span>&nbsp;&nbsp;&nbsp;
+            {% endif %}
+
+            {% if verb.verbForm %}
+                <span style="color: maroon;">Form (पद):</span>&nbsp;
+                <span id="verbForm_{{verb.id}}" style="color: maroon;">{{ verb.verbForm }}</span>&nbsp;&nbsp;&nbsp;
+            {% endif %}
+
+            {% if verb.info %}
+                <br><span id="verbInfo_{{verb.id}}" style="color: darkblue;">{{ verb.info }}</span>
+            {% endif %}
+            
+            {% if admin %}
+                <br>
+                <a class="toDisable" href="" onclick="editVerbHeader('{{verb.id}}', '{{verb.chapter}}'); return false;">
+                    <span class="editlinks">Edit</span>
+                </a>&nbsp;&nbsp;
+                <a class="toDisable" href="" onclick="deleteVerb('{{verb.id}}'); return false;">
+                    <span class="editlinks">Delete Verb</span>
+                </a>
+            {% endif %}
+        </div>
+        <div class="container">
+            <div id="present_{{verb.id}}">
+                <span class="verbtense">लट् (वर्तमान)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.present31 }}</td>
+                        <td>{{ verb.present32 }}</td>
+                        <td>{{ verb.present33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.present21 }}</td>
+                        <td>{{ verb.present22 }}</td>
+                        <td>{{ verb.present23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.present11 }}</td>
+                        <td>{{ verb.present12 }}</td>
+                        <td>{{ verb.present13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'present', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="imperative_{{verb.id}}">
+                <span class="verbtense">लोट् (आज्ञा देना)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.imperative31 }}</td>
+                        <td>{{ verb.imperative32 }}</td>
+                        <td>{{ verb.imperative33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.imperative21 }}</td>
+                        <td>{{ verb.imperative22 }}</td>
+                        <td>{{ verb.imperative23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.imperative11 }}</td>
+                        <td>{{ verb.imperative12 }}</td>
+                        <td>{{ verb.imperative13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'imperative', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="past_{{verb.id}}">
+                <span class="verbtense">लङ् (अनद्यतन भूतकाल)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.past31 }}</td>
+                        <td>{{ verb.past32 }}</td>
+                        <td>{{ verb.past33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.past21 }}</td>
+                        <td>{{ verb.past22 }}</td>
+                        <td>{{ verb.past23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.past11 }}</td>
+                        <td>{{ verb.past12 }}</td>
+                        <td>{{ verb.past13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'past', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="potential_{{verb.id}}">
+                <span class="verbtense">विधिलिङ् (आज्ञा, चाहिए)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.potential31 }}</td>
+                        <td>{{ verb.potential32 }}</td>
+                        <td>{{ verb.potential33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.potential21 }}</td>
+                        <td>{{ verb.potential22 }}</td>
+                        <td>{{ verb.potential23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.potential11 }}</td>
+                        <td>{{ verb.potential12 }}</td>
+                        <td>{{ verb.potential13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                <a class="toDisable" href="" onclick="editverb(this, 'potential', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="ffuture_{{verb.id}}">
+                <span class="verbtense">लुट् (अनद्यतन भविष्यत्)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.ffuture31 }}</td>
+                        <td>{{ verb.ffuture32 }}</td>
+                        <td>{{ verb.ffuture33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.ffuture21 }}</td>
+                        <td>{{ verb.ffuture22 }}</td>
+                        <td>{{ verb.ffuture23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.ffuture11 }}</td>
+                        <td>{{ verb.ffuture12 }}</td>
+                        <td>{{ verb.ffuture13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'ffuture', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="sfuture_{{verb.id}}">
+                <span class="verbtense">लृट् (भविष्यत्)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.sfuture31 }}</td>
+                        <td>{{ verb.sfuture32 }}</td>
+                        <td>{{ verb.sfuture33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.sfuture21 }}</td>
+                        <td>{{ verb.sfuture22 }}</td>
+                        <td>{{ verb.sfuture23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.sfuture11 }}</td>
+                        <td>{{ verb.sfuture12 }}</td>
+                        <td>{{ verb.sfuture13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'sfuture', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="conditional_{{verb.id}}">
+                <span class="verbtense">लृङ् (हेतुहेतुमद् भविष्यत्)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.conditional31 }}</td>
+                        <td>{{ verb.conditional32 }}</td>
+                        <td>{{ verb.conditional33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.conditional21 }}</td>
+                        <td>{{ verb.conditional22 }}</td>
+                        <td>{{ verb.conditional23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.conditional11 }}</td>
+                        <td>{{ verb.conditional12 }}</td>
+                        <td>{{ verb.conditional13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'conditional', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="benedictive_{{verb.id}}">
+                <span class="verbtense">आशीर्लिङ्</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.benedictive31 }}</td>
+                        <td>{{ verb.benedictive32 }}</td>
+                        <td>{{ verb.benedictive33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.benedictive21 }}</td>
+                        <td>{{ verb.benedictive22 }}</td>
+                        <td>{{ verb.benedictive23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.benedictive11 }}</td>
+                        <td>{{ verb.benedictive12 }}</td>
+                        <td>{{ verb.benedictive13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'benedictive', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="pastperfect_{{verb.id}}">
+                <span class="verbtense">लिट् (परोक्ष भूत)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.pastperfect31 }}</td>
+                        <td>{{ verb.pastperfect32 }}</td>
+                        <td>{{ verb.pastperfect33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.pastperfect21 }}</td>
+                        <td>{{ verb.pastperfect22 }}</td>
+                        <td>{{ verb.pastperfect23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.pastperfect11 }}</td>
+                        <td>{{ verb.pastperfect12 }}</td>
+                        <td>{{ verb.pastperfect13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'pastperfect', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div id="perfect_{{verb.id}}">
+                <span class="verbtense">लुङ् (सामान्य भूतकाल)</span>
+                <table class="table">
+                    <tr>
+                        <td>{{ verb.perfect31 }}</td>
+                        <td>{{ verb.perfect32 }}</td>
+                        <td>{{ verb.perfect33 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.perfect21 }}</td>
+                        <td>{{ verb.perfect22 }}</td>
+                        <td>{{ verb.perfect23 }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ verb.perfect11 }}</td>
+                        <td>{{ verb.perfect12 }}</td>
+                        <td>{{ verb.perfect13 }}</td>
+                    </tr>
+                </table>
+                {% if admin %}
+                    <a class="toDisable" href="" onclick="editverb(this, 'perfect', '{{verb.id}}'); return false;">
+                        <span class="editlinks">Edit</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<hr>
+<div id="meanings">
+    <h5>Word Meanings</h5>
+    {% if admin %}
+        <a href="" data-chapter="{{content['content'].chapter}}" onclick="addMeaningTemplate(this); return false;">Add</a>
+    {% endif %}
+    <div id="addMeaningDiv"></div>
+    <hr>
+    <div id="allmeanings">
+        {% for meaning in content['meanings'] %}
+            <div id="meaning_{{meaning.id}}">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <span id="word_{{meaning.id}}" style="color: maroon;">{{ meaning.word }}</span>
+                        {% if meaning.wordClass %}
+                            &nbsp;&nbsp;(<span id="wordClass_{{meaning.id}}" style="color: darkgreen;">{{ meaning.wordClass }}</span>)
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-3">
+                        <span id="meaning1_{{meaning.id}}">{{ meaning.meaning1 }}</span>
+                    </div>
+                    <div class="col-lg-2">
+                        {% if meaning.meaning2 %}
+                            <span id="meaning2_{{meaning.id}}">{{ meaning.meaning2 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-2">
+                        {% if meaning.meaning3 %}
+                            <span id="meaning3_{{meaning.id}}">{{ meaning.meaning3 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-1">
+                        {% if meaning.meaning4 %}
+                            <span id="meaning4_{{meaning.id}}">{{ meaning.meaning4 }}</span>
+                        {% endif %}
+                        {% if meaning.meaning5 %}
+                            / <span id="meaning5_{{meaning.id}}">{{ meaning.meaning5 }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-1">
+                        {% if admin %}
+                            <a class="toDisable" href="" onclick="editmeanings('{{meaning.id}}', '{{meaning.chapter}}'); return false;">
+                                <span>Edit</span>
+                            </a>&nbsp;&nbsp;
+                            <a class="toDisable" href="" onclick="deleteMeaning('{{meaning.id}}'); return false;">
+                                <span>Delete</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
+{% block script %}
+    <script src="{{ url_for('static', filename='admin/chapter.js') }}"></script>
+    <script src="{{ url_for('static', filename='allsockets.js') }}"></script>
+
+    <script id="aphorism_li" type="text/x-handlebars-template">
+        {% raw -%}
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <label for="inputChapterNumber_{{id}}"><span class="requirement">*</span>Chapter #</label>
+                        <input type="text" class="form-control" id="inputChapterNumber_{{id}}" name="chapterNumber" autofocus value="{{chapter}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputRuleNumber_{{id}}"><span class="requirement">*</span>Rule #</label>
+                        <input type="text" class="form-control" id="inputRuleNumber_{{id}}" name="rulenumber" value="{{rulenumber}}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="inputTopic_{{id}}"><span class="requirement">*</span>Topic</label>
+                        <input type="text" class="form-control" id="inputTopic_{{id}}" name="topic" autofocus value="{{topic}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputSubtopic_{{id}}"><span class="requirement">*</span>Sub Topic</label>
+                        <input type="text" class="form-control" id="inputSubtopic_{{id}}" name="subtopic" value="{{subtopic}}">
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="form-group">
+                        <label for="inputRule_{{id}}"><span class="requirement">*</span>Rule</label>
+                        <textarea class="form-control" rows="5" id="inputRule_{{id}}" name="rule">{{rule}}</textarea>
+                    </div>
+                </div>
+            </div>
+            <button id="updateAphorism_{{id}}" data-rule_id="{{id}}" class="btn btn-success btn-sm" onclick="updateAphorism(this); return false;">Update</button>
+            <button id="CancelUpdateAphorism_{{id}}" class="btn btn-warning btn-sm" onclick="CancelUpdateAphorism(); return false;">Cancel</button>
+        {%- endraw %}
+    </script>
+    <script type="text/x-handlebars-template" id="updatedAphorism">
+        {% raw -%}
+            <span id="ruleNumber_{{id}}" style="color: darkgreen; font-weight: bold;">{{rule_number}}</span>&nbsp;&nbsp;
+            <span id="topic_{{id}}" style="color: tomato;">{{topic}}</span>&nbsp;&nbsp;
+            <span id="subtopic_{{id}}" style="color: brown;">{{subtopic}}</span>&nbsp;&nbsp;
+            <span id="rule_{{id}}">{{rule}}</span>&nbsp;&nbsp;&nbsp;&nbsp;        
+            <a data-aphorism_id="{{id}}" onclick="editaphorism(this, '{{chapter}}'); return false;" href="">
+                <span class="editlinks">Edit</span>
+            </a>&nbsp;&nbsp;
+            <a href="" onclick="deleteRule('{{id}}'); return false;" class="toDisable">
+                <span class="editlinks">Delete</span>
+            </a>
+        {%- endraw %}
+    </script>
+    <script type="text/x-handlebars-template" id="editVerbTemplate">
+        {% raw -%}            
+            <span class="verbtense">{{tense}}</span>
+            <table class="table">
+                <tr>
+                    <td><input class="form-control" type="text" value="{{form31}}" id="form31_{{id}}"></td>
+                    <td><input class="form-control" type="text" value="{{form32}}" id="form32_{{id}}"></td>
+                    <td><input class="form-control" type="text" value="{{form33}}" id="form33_{{id}}"></td>
+                </tr>
+                <tr>
+                    <td><input class="form-control" type="text" value="{{form21}}" id="form21_{{id}}"></td>
+                    <td><input class="form-control" type="text" value="{{form22}}" id="form22_{{id}}"></td>
+                    <td><input class="form-control" type="text" value="{{form23}}" id="form23_{{id}}"></td>
+                </tr>
+                <tr>
+                    <td><input class="form-control" type="text" value="{{form11}}" id="form11_{{id}}"></td>
+                    <td><input class="form-control" type="text" value="{{form12}}" id="form12_{{id}}"></td>
+                    <td><input class="form-control" type="text" value="{{form13}}" id="form13_{{id}}"></td>
+                </tr>
+            </table>
+            <button id="updateVerbButton_{{id}}" onclick="updateVerb('{{verbForm}}', '{{id}}'); return false;" class="btn btn-success btn-sm">Update</button>
+            <button id="cancelVerbButton_{{id}}" onclick="cancelEditVerb(); return false;" class="btn btn-danger btn-sm">Cancel</button>
+        {%- endraw %}
+    </script>
+
+    <script type="text/x-handlebars-template" id="newVerbTemplate">
+        {% raw -%}
+            <span class="verbtense">{{verbTense}}</span>
+            <table class="table">
+                <tr>
+                    <td>{{ form31 }}</td>
+                    <td>{{ form32 }}</td>
+                    <td>{{ form33 }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form21 }}</td>
+                    <td>{{ form22 }}</td>
+                    <td>{{ form23 }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form11 }}</td>
+                    <td>{{ form12 }}</td>
+                    <td>{{ form13 }}</td>
+                </tr>
+            </table>
+            <a class="toDisable" href="" onclick="editverb(this, '{{verbForm}}', '{{id}}'); return false;">
+                <span class="editlinks">Edit</span>
+            </a>
+        {%- endraw %}
+    </script>
+    <script type="text/x-handlebars-template" id="editVerbHeaderTemplate">
+        {% raw -%}
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="verbName_{{id}}"><span class="requirement">*</span>Name</label>
+                        <input class="form-control" type="text" value="{{verbName}}" id="verbName_{{id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="verbMeaning_{{id}}"><span class="requirement">*</span>Meaning</label>
+                        <input class="form-control" type="text" value="{{verbMeaning}}" id="verbMeaning_{{id}}">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="verbClass_{{id}}">Class</label>
+                        <input class="form-control" type="text" value="{{verbClass}}" id="verbClass_{{id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="verbForm_{{id}}">Form</label>
+                        <input class="form-control" type="text" value="{{verbForm}}" id="verbForm_{{id}}">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="verbInfo_{{id}}">Info</label>
+                        <input class="form-control" type="text" value="{{verbInfo}}" id="verbInfo_{{id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="verbChapter_{{id}}"><span class="requirement">*</span>Chapter</label>
+                        <input class="form-control" type="text" value="{{verbChapter}}" id="verbChapter_{{id}}">
+                    </div>
+                </div>
+            </div>
+            <button id="updateVerbHeaderButton_{{id}}" onclick="updateVerbHeader('{{id}}'); return false;" class="btn btn-success btn-sm">Update</button>
+            <button id="cancelVerbHeaderButton_{{id}}" onclick="cancelEditVerbHeader('{{id}}'); return false;" class="btn btn-danger btn-sm">Cancel</button>            
+        {%- endraw %}
+    </script>
+
+    <script type="text/x-handlebars-template" id="newVerbHeaderTemplate">
+        {% raw -%}
+            <span id="verbName_{{id}}" style="color: darkgreen;">{{verbName}}</span>&nbsp;&nbsp;
+            (<span style="color: firebrick;" id="verbMeaning_{{id}}">{{verbMeaning}}</span>)&nbsp;&nbsp;&nbsp;&nbsp;
+
+            {{#if verbClass}}
+                <span style="color: darkmagenta;">Class (गण):</span>&nbsp;
+                <span id="verbClass_{{id}}" style="color: darkmagenta;">{{verbClass}}</span>&nbsp;&nbsp;&nbsp;
+            {{/if}}
+
+            {{#if verbForm}}
+                <span style="color: maroon;">Form (पद):</span>&nbsp;
+                <span id="verbForm_{{id}}" style="color: maroon;">{{verbForm}}</span>&nbsp;&nbsp;&nbsp;
+            {{/if}}
+
+            {{#if verbInfo}}
+                <br><span id="verbInfo_{{id}}" style="color: darkblue;">{{verbInfo}}</span>
+            {{/if}}
+            
+            {{#if admin}}
+                <br>
+                <a class="toDisable" href="" onclick="editVerbHeader('{{id}}', '{{chapter}}'); return false;">
+                    <span class="editlinks">Edit</span>
+                </a>&nbsp;&nbsp;
+                <a class="toDisable" href="" onclick="deleteVerb('{{id}}'); return false;">
+                    <span class="editlinks">Delete Verb</span>
+                </a>
+            {{/if}}
+        {%- endraw %}
+    </script>
+
+    <script type="text/x-handlebars-template" id="editMeaningTemplate">
+        {% raw -%}
+            <hr>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="editWord_{{id}}"><span class="requirement">*</span>Word</label>
+                        <input class="form-control" type="text" value="{{editWord}}" id="editWord_{{id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editChapter_{{id}}"><span class="requirement">*</span>Chapter</label>
+                        <input class="form-control" type="text" value="{{editChapter}}" id="editChapter_{{id}}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="editMeaning1_{{id}}"><span class="requirement">*</span>Meaning 1</label>
+                        <input class="form-control" type="text" value="{{editMeaning1}}" id="editMeaning1_{{id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editMeaning2_{{id}}">Meaning 2</label>
+                        <input class="form-control" type="text" value="{{editMeaning2}}" id="editMeaning2_{{id}}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="editMeaning3_{{id}}">Meaning 3</label>
+                        <input class="form-control" type="text" value="{{editMeaning3}}" id="editMeaning3_{{id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editMeaning4_{{id}}">Meaning 4</label>
+                        <input class="form-control" type="text" value="{{editMeaning4}}" id="editMeaning4_{{id}}">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="editMeaning5_{{id}}">Meaning 5</label>
+                        <input class="form-control" type="text" value="{{editMeaning5}}" id="editMeaning5_{{id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="editWordClass_{{id}}">Word Class</label>
+                        <input class="form-control" type="text" value="{{editWordClass}}" id="editWordClass_{{id}}">
+                    </div>
+                </div>
+            </div>
+            <button id="updateMeaningButton_{{id}}" onclick="updateMeaning('{{id}}')" class="btn btn-success btn-sm">Update</button>
+            <button id="cancelUpdteMeaningButton_{{id}}" onclick="cancelEditMeaning('{{id}}')" class="btn btn-danger btn-sm">Cancel</button>
+            <hr>
+        {%- endraw %}
+    </script>
+
+
+    <script type="text/x-handlebars-template" id="newMeaningTemplate">
+        {% raw -%}
+            <div class="row">
+                <div class="col-lg-3">
+                    <span id="word_{{id}}" style="color: maroon;">{{word}}</span>
+                    {{#if wordClass}}
+                        &nbsp;&nbsp;(<span id="wordClass_{{id}}" style="color: darkgreen;">{{wordClass}}</span>)
+                    {{/if}}
+                </div>
+                <div class="col-lg-3">
+                    <span id="meaning1_{{id}}">{{meaning1}}</span>
+                </div>
+                <div class="col-lg-2">
+                    {{#if meaning2}}
+                        <span id="meaning2_{{id}}">{{meaning2}}</span>
+                    {{/if}}
+                </div>
+                <div class="col-lg-2">
+                    {{#if meaning3}}
+                        <span id="meaning3_{{id}}">{{meaning3}}</span>
+                    {{/if}}
+                </div>
+                <div class="col-lg-1">
+                    {{#if meaning4}}
+                        <span id="meaning4_{{id}}">{{meaning4}}</span>
+                    {{/if}}
+                    {{#if meaning5}}
+                        / <span id="meaning5_{{id}}">{{meaning5}}</span>
+                    {{/if}}
+                </div>
+                <div class="col-lg-1">
+                    {{#if admin}}
+                        <a class="toDisable" href="" onclick="editmeanings('{{id}}', '{{chapter}}'); return false;">
+                            <span>Edit</span>
+                        </a>&nbsp;&nbsp;
+                        <a class="toDisable" href="" onclick="deleteMeaning('{{id}}'); return false;">
+                            <span>Delete</span>
+                        </a>
+                    {{/if}}
+                </div>
+            </div>
+        {%- endraw %}
+    </script>
+
+
+    <script id="addNewRuleTemplate" type="text/x-handlebars-template">
+        {% raw -%}
+        <form onsubmit="addNewRule('{{chapter}}'); return false;">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <label for="chapter"><span class="requirement">*</span>Chapter #</label>
+                        <input type="text" class="form-control" id="chapter" value="{{chapter}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="rule_number"><span class="requirement">*</span>Rule #</label>
+                        <input type="text" class="form-control" id="rule_number">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="topic"><span class="requirement">*</span>Topic</label>
+                        <input type="text" class="form-control" id="topic">
+                    </div>
+                    <div class="form-group">
+                        <label for="subtopic"><span class="requirement">*</span>Sub Topic</label>
+                        <input type="text" class="form-control" id="subtopic">
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="form-group">
+                        <label for="rule"><span class="requirement">*</span>Rule</label>
+                        <textarea class="form-control" rows="5" id="rule"></textarea>
+                    </div>
+                </div>
+            </div>
+            <button id="addNewRuleButton" type="submit" class="btn btn-success btn-sm">Add</button>
+            <button id="cancelAddNewRuleButton" onclick="cancelAddNewRule(); return false;" class="btn btn-warning btn-sm">Cancel</button>
+        </form>
+        {%- endraw %}
+    </script>
+
+    <script type="text/x-handlebars-template" id="addVerbHeaderTemplate">
+        {% raw -%}
+            <form onsubmit="addVerbHeader('{{chapter}}'); return false;">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="add_verbname"><span class="requirement">*</span>Name</label>
+                            <input class="form-control" type="text" id="add_verbname">
+                        </div>
+                        <div class="form-group">
+                            <label for="add_verbmeaning"><span class="requirement">*</span>Meaning</label>
+                            <input class="form-control" type="text" id="add_verbmeaning">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="add_verbclass">Class</label>
+                            <input class="form-control" type="text" id="add_verbclass">
+                        </div>
+                        <div class="form-group">
+                            <label for="add_verbform">Form</label>
+                            <input class="form-control" type="text" id="add_verbform">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="add_verbinfo">Info</label>
+                            <input class="form-control" type="text" id="add_verbinfo">
+                        </div>
+                        <div class="form-group">
+                            <label for="add_verbchapter"><span class="requirement">*</span>Chapter</label>
+                            <input class="form-control" type="text" value="{{chapter}}" id="add_verbchapter" disabled>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" id="addVerbHeaderButton" class="btn btn-success btn-sm">Update</button>
+                <button id="cancelAddVerbHeaderButton" onclick="cancelAddVerbHeader(); return false;" class="btn btn-danger btn-sm">Cancel</button>
+            </form>
+            <hr>
+        {%- endraw %}
+    </script>
+
+    <script type="text/x-handlebars-template" id="addWordHeaderTemplate">
+        {% raw -%}
+        <form onsubmit="addWord('{{chapter}}'); return false;">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="add_wordchapter"><span class="requirement">*</span>Chapter #</label>
+                        <input type="text" class="form-control" id="add_wordchapter" disabled value="{{chapter}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="add_word"><span class="requirement">*</span>Word</label>
+                        <input type="text" class="form-control" id="add_word">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="add_wordMeaning"><span class="requirement">*</span>Meaning</label>
+                        <input type="text" class="form-control" id="add_wordMeaning">
+                    </div>
+                    <div class="form-group">
+                        <label for="add_wordGender"><span class="requirement">*</span>Gender</label>
+                        <input type="text" class="form-control" id="add_wordGender">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label for="add_wordForm"><span class="requirement">*</span>Word Form</label>
+                        <input type="text" class="form-control" id="add_wordForm">
+                    </div>
+                    <div class="form-group">
+                        <label for="add_wordInfo">Additional Info</label>
+                        <input type="text" class="form-control" id="add_wordInfo">
+                    </div>
+                </div>
+            </div>
+            <button id="addWordHeaderButton" type="submit" class="btn btn-success btn-sm">Add</button>
+            <button id="cancelAddWordHeaderButton" onclick="cancelAddWordHeader(); return false;" class="btn btn-danger btn-sm">Cancel</button>
+        </form>
+        <hr>
+        {%- endraw %}
+    </script>
+
+
+    <script type="text/x-handlebars-template" id="addMeaningTemplate">
+        {% raw -%}
+        <form onsubmit="addMeaning('{{chapter}}'); return false;">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="addMeaning_word"><span class="requirement">*</span>Word</label>
+                        <input class="form-control" type="text" id="addMeaning_word">
+                    </div>
+                    <div class="form-group">
+                        <label for="addMeaning_chapter"><span class="requirement">*</span>Chapter</label>
+                        <input class="form-control" type="text" value="{{chapter}}" id="addMeaning_chapter" disabled>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="addMeaning_meaning1"><span class="requirement">*</span>Meaning 1</label>
+                        <input class="form-control" type="text" id="addMeaning_meaning1">
+                    </div>
+                    <div class="form-group">
+                        <label for="addMeaning_meaning2">Meaning 2</label>
+                        <input class="form-control" type="text" id="addMeaning_meaning2">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="addMeaning_meaning3">Meaning 3</label>
+                        <input class="form-control" type="text" id="addMeaning_meaning3">
+                    </div>
+                    <div class="form-group">
+                        <label for="addMeaning_meaning4">Meaning 4</label>
+                        <input class="form-control" type="text" id="addMeaning_meaning4">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="addMeaning_meaning5">Meaning 5</label>
+                        <input class="form-control" type="text" id="addMeaning_meaning5">
+                    </div>
+                    <div class="form-group">
+                        <label for="addMeaning_wordClass">Word Class</label>
+                        <input class="form-control" type="text" id="addMeaning_wordClass">
+                    </div>
+                </div>
+            </div>
+            <button id="addMeaningButton" type="submit" class="btn btn-success btn-sm">Add</button>
+            <button id="cancelAddMeaningButton" onclick="cancelAddMeaning(); return false;" class="btn btn-danger btn-sm">Cancel</button>            
+        </form>
+        {%- endraw %}
+    </script>
+        
+
+{% endblock %}
+
+{% block alerts %}
+    <div id="counter_div" style="display: none;">
+        <div>
+            New Messages
+        </div>
+        <div>
+            <span id="newPvtMsgs" style="color: green; font-weight: bold;"></span>
+        </div>
+    </div>
+{% endblock %}

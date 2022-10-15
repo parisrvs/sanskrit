@@ -1,0 +1,48 @@
+@keyframes hide {
+    0% {
+        opacity: 1;
+        line-height: 100%;
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+    75% {
+        opacity: 0;
+        line-height: 100%;
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+    100% {
+        opacity: 0;
+        line-height: 0px;
+        padding: 0px;
+        margin-bottom: 0px;
+    }
+}
+
+.hide  {
+    float: right;
+}
+
+#userDiv {text-align: center;}
+#chats, #pvtChats {
+    height: 400px;
+    overflow: scroll;
+}
+#users {
+    height: 475px;
+    overflow: scroll;
+}
+#message, #pvtmessage {
+    height: 75px;
+}
+.chatMessageBlock {
+    background-color: aliceblue;
+    animation-name: hide;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+    word-wrap: break-word;
+    text-align: left;
+    padding: 5px;
+    margin-bottom: 5px;
+}

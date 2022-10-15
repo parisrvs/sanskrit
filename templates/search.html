@@ -1,0 +1,449 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Search
+{% endblock %}
+
+{% block style %}
+    <style>
+        #search {text-align: center;}
+        .container {            
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .container > div {
+            font-size: large;
+            margin: 10px;
+            padding: 10px;
+        }
+        #meanings {
+            padding: 5px;
+            font-size: large;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block links %}
+    <a href="{{ url_for('homepage') }}">Homepage</a>&nbsp;&nbsp;
+    <a href="{{ url_for('contents') }}">Contents</a>&nbsp;&nbsp;
+    <a href="{{ url_for('notes') }}">Notes</a>
+{% endblock %}
+
+{% block body %}
+    <div id="search">
+        <div class="row">
+            <div class="col-lg-2">
+                <form action="{{ url_for('search') }}" method="POST" id="searchForm">
+                    <div class="form-group">
+                        <label for="keyword"><span class="requirement">*</span>Keyword</label>
+                        <input type="text" class="form-control" id="keyword" name="keyword" autofocus placeholder="Keyword">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                {% if search_error %}
+                    <div style="color: red;">{{ search_error }}</div>
+                {% endif %}
+                <hr>
+                {% if results %}
+                    <span>Results for - {{keyword}}</span>
+                    <hr>
+                    <a href="" onclick="selectAll(); return false;">All Results</a><br>
+                    {% if results['aphorisms'] %}
+                        <a href="" onclick="selectBlock('aphorisms'); return false;">Aphorisms</a><br>
+                    {% endif %}
+
+                    {% if results['words'] %}
+                        <a href="" onclick="selectBlock('words'); return false;">Words</a><br>
+                    {% endif %}
+
+                    {% if results['verbs'] %}
+                        <a href="" onclick="selectBlock('verbs'); return false;">Verbs</a><br>
+                    {% endif %}
+
+                    {% if results['meanings'] %}
+                        <a href="" onclick="selectBlock('meanings'); return false;">Meanings</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="col-lg-10">
+                {% if results['aphorisms'] %}
+                <div data-query="aphorisms" class="searchresults" id="aphorisms" style="text-align: left;">
+                    <span>Aphorisms</span>
+                    <ul id="allrules">
+                        {% for li in results['aphorisms'] %}
+                            <li>
+                                <span style="color: darkgreen; font-weight: bold;">{{ li.rule_number }}</span>&nbsp;&nbsp;
+                                <span style="color: tomato;">{{ li.topic }}</span>&nbsp;&nbsp;
+                                <span style="color: brown;">{{ li.subtopic }}</span>&nbsp;&nbsp;
+                                <span>{{ li.rule }}</span>&nbsp;&nbsp;
+                                <span><a href="{{url_for('chapter', chapter_id=li.chapter)}}">Chapter {{li.chapter}}</a></span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                </div>                
+                {% endif %}                
+
+                {% if results["words"] %}
+                <div data-query="words" class="searchresults" id="words">
+                    <span>Words</span>
+                    <div class="row" style="text-align: center; font-size: large;">
+                        {% for word in results['words'] %}
+                            <div class="col-lg-4">
+                                <div>
+                                    <span style="color: blue;">{{word.word}}</span>&nbsp;-&nbsp;
+                                    <span style="color: deeppink;">({{ word.meaning }})</span><br>
+                                    
+                                    {% if word.gender and word.gender != '-' %}
+                                        <span style="color: darkgreen;">Gender: {{ word.gender }}</span>&nbsp;&nbsp;
+                                    {% endif %}
+                    
+                                    {% if word.form and word.form != '-' %}
+                                        <span style="color: darkorange;">Form: {{ word.form }}</span><br>
+                                    {% endif %}
+                    
+                                    {% if word.info and word.info != '-' %}
+                                        <span>{{ word.info }}</span><br>
+                                    {% else %}<br>{% endif %}
+                                    <a href="{{ url_for('chapter', chapter_id=word.chapter) }}">Chapter - {{word.chapter}}</a>
+                                </div>
+                                <table class="table">
+                                    <tr>
+                                        <td>{% if word.nominative1 != '-' %}{{ word.nominative1 }}{% endif %}</td>
+                                        <td>{% if word.nominative2 != '-' %}{{ word.nominative2 }}{% endif %}</td>
+                                        <td>{% if word.nominative3 != '-' %}{{ word.nominative3 }}{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if word.accusative1 != '-' %}{{ word.accusative1 }}{% endif %}</td>
+                                        <td>{% if word.accusative2 != '-' %}{{ word.accusative2 }}{% endif %}</td>
+                                        <td>{% if word.accusative3 != '-' %}{{ word.accusative3 }}{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if word.instrumental1 != '-' %}{{ word.instrumental1 }}{% endif %}</td>
+                                        <td>{% if word.instrumental2 != '-' %}{{ word.instrumental2 }}{% endif %}</td>
+                                        <td>{% if word.instrumental3 != '-' %}{{ word.instrumental3 }}{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if word.dative1 != '-' %}{{ word.dative1 }}{% endif %}</td>
+                                        <td>{% if word.dative2 != '-' %}{{ word.dative2 }}{% endif %}</td>
+                                        <td>{% if word.dative3 != '-' %}{{ word.dative3 }}{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if word.ablative1 != '-' %}{{ word.ablative1 }}{% endif %}</td>
+                                        <td>{% if word.ablative2 != '-' %}{{ word.ablative2 }}{% endif %}</td>
+                                        <td>{% if word.ablative3 != '-' %}{{ word.ablative3 }}{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if word.genitive1 != '-' %}{{ word.genitive1 }}{% endif %}</td>
+                                        <td>{% if word.genitive2 != '-' %}{{ word.genitive2 }}{% endif %}</td>
+                                        <td>{% if word.genitive3 != '-' %}{{ word.genitive3 }}{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{% if word.locative1 != '-' %}{{ word.locative1 }}{% endif %}</td>
+                                        <td>{% if word.locative2 != '-' %}{{ word.locative2 }}{% endif %}</td>
+                                        <td>{% if word.locative3 != '-' %}{{ word.locative3 }}{% endif %}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <hr>
+                </div>                
+                {% endif %}
+
+                {% if results['verbs'] %}
+                <div data-query="verbs" class="searchresults" id="verbs">
+                    <span>Verbs</span>
+                    {% for verb in results['verbs'] %}
+                        <div>
+                            <div>
+                                <span style="color: darkgreen;">{{verb.verb}}</span>&nbsp;&nbsp;
+                                (<span style="color: firebrick;">{{ verb.meaning }}</span>)&nbsp;&nbsp;&nbsp;&nbsp;
+                    
+                                {% if verb.verbClass %}
+                                    <span style="color: darkmagenta;">Class (गण):</span>&nbsp;
+                                    <span style="color: darkmagenta;">{{ verb.verbClass }}</span>&nbsp;&nbsp;&nbsp;
+                                {% endif %}
+                    
+                                {% if verb.verbForm %}
+                                    <span style="color: maroon;">Form (पद):</span>&nbsp;
+                                    <span style="color: maroon;">{{ verb.verbForm }}</span>&nbsp;&nbsp;&nbsp;
+                                {% endif %}
+                    
+                                {% if verb.info %}
+                                    <br><span style="color: darkblue;">{{ verb.info }}</span>
+                                {% endif %}
+                                <br><a href="{{ url_for('chapter', chapter_id=verb.chapter) }}">Chapter - {{verb.chapter}}</a>
+                            </div>
+                            <div class="container">
+                                <div>
+                                    <span class="verbtense">लट् (वर्तमान)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.present31 }}</td>
+                                            <td>{{ verb.present32 }}</td>
+                                            <td>{{ verb.present33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.present21 }}</td>
+                                            <td>{{ verb.present22 }}</td>
+                                            <td>{{ verb.present23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.present11 }}</td>
+                                            <td>{{ verb.present12 }}</td>
+                                            <td>{{ verb.present13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">लोट् (आज्ञा देना)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.imperative31 }}</td>
+                                            <td>{{ verb.imperative32 }}</td>
+                                            <td>{{ verb.imperative33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.imperative21 }}</td>
+                                            <td>{{ verb.imperative22 }}</td>
+                                            <td>{{ verb.imperative23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.imperative11 }}</td>
+                                            <td>{{ verb.imperative12 }}</td>
+                                            <td>{{ verb.imperative13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">लङ् (अनद्यतन भूतकाल)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.past31 }}</td>
+                                            <td>{{ verb.past32 }}</td>
+                                            <td>{{ verb.past33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.past21 }}</td>
+                                            <td>{{ verb.past22 }}</td>
+                                            <td>{{ verb.past23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.past11 }}</td>
+                                            <td>{{ verb.past12 }}</td>
+                                            <td>{{ verb.past13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">विधिलिङ् (आज्ञा, चाहिए)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.potential31 }}</td>
+                                            <td>{{ verb.potential32 }}</td>
+                                            <td>{{ verb.potential33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.potential21 }}</td>
+                                            <td>{{ verb.potential22 }}</td>
+                                            <td>{{ verb.potential23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.potential11 }}</td>
+                                            <td>{{ verb.potential12 }}</td>
+                                            <td>{{ verb.potential13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">लुट् (अनद्यतन भविष्यत्)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.ffuture31 }}</td>
+                                            <td>{{ verb.ffuture32 }}</td>
+                                            <td>{{ verb.ffuture33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.ffuture21 }}</td>
+                                            <td>{{ verb.ffuture22 }}</td>
+                                            <td>{{ verb.ffuture23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.ffuture11 }}</td>
+                                            <td>{{ verb.ffuture12 }}</td>
+                                            <td>{{ verb.ffuture13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">लृट् (भविष्यत्)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.sfuture31 }}</td>
+                                            <td>{{ verb.sfuture32 }}</td>
+                                            <td>{{ verb.sfuture33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.sfuture21 }}</td>
+                                            <td>{{ verb.sfuture22 }}</td>
+                                            <td>{{ verb.sfuture23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.sfuture11 }}</td>
+                                            <td>{{ verb.sfuture12 }}</td>
+                                            <td>{{ verb.sfuture13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">लृङ् (हेतुहेतुमद् भविष्यत्)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.conditional31 }}</td>
+                                            <td>{{ verb.conditional32 }}</td>
+                                            <td>{{ verb.conditional33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.conditional21 }}</td>
+                                            <td>{{ verb.conditional22 }}</td>
+                                            <td>{{ verb.conditional23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.conditional11 }}</td>
+                                            <td>{{ verb.conditional12 }}</td>
+                                            <td>{{ verb.conditional13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">आशीर्लिङ्</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.benedictive31 }}</td>
+                                            <td>{{ verb.benedictive32 }}</td>
+                                            <td>{{ verb.benedictive33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.benedictive21 }}</td>
+                                            <td>{{ verb.benedictive22 }}</td>
+                                            <td>{{ verb.benedictive23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.benedictive11 }}</td>
+                                            <td>{{ verb.benedictive12 }}</td>
+                                            <td>{{ verb.benedictive13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">लिट् (परोक्ष भूत)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.pastperfect31 }}</td>
+                                            <td>{{ verb.pastperfect32 }}</td>
+                                            <td>{{ verb.pastperfect33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.pastperfect21 }}</td>
+                                            <td>{{ verb.pastperfect22 }}</td>
+                                            <td>{{ verb.pastperfect23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.pastperfect11 }}</td>
+                                            <td>{{ verb.pastperfect12 }}</td>
+                                            <td>{{ verb.pastperfect13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <span class="verbtense">लुङ् (सामान्य भूतकाल)</span>
+                                    <table class="table">
+                                        <tr>
+                                            <td>{{ verb.perfect31 }}</td>
+                                            <td>{{ verb.perfect32 }}</td>
+                                            <td>{{ verb.perfect33 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.perfect21 }}</td>
+                                            <td>{{ verb.perfect22 }}</td>
+                                            <td>{{ verb.perfect23 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ verb.perfect11 }}</td>
+                                            <td>{{ verb.perfect12 }}</td>
+                                            <td>{{ verb.perfect13 }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                <hr>
+                </div>                
+                {% endif %}
+
+                {% if results['meanings'] %}
+                    <div id="meanings" data-query="meanings" class="searchresults">
+                        <span>Meanings</span>
+                        {% for meaning in results['meanings'] %}
+                            <div>
+                                <div class="row">
+                                    <div class="col-lg-2">
+                                        <span style="color: maroon;">{{ meaning.word }}</span>
+                                        {% if meaning.wordClass %}
+                                            &nbsp;&nbsp;(<span style="color: darkgreen;">{{ meaning.wordClass }}</span>)
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <span>{{ meaning.meaning1 }}</span>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        {% if meaning.meaning2 %}
+                                            <span>{{ meaning.meaning2 }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-2">
+                                        {% if meaning.meaning3 %}
+                                            <span>{{ meaning.meaning3 }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-2">
+                                        {% if meaning.meaning4 %}
+                                            <span>{{ meaning.meaning4 }}</span>
+                                        {% endif %}                                    
+                                    </div>
+                                    <div class="col-lg-2">
+                                        {% if meaning.meaning5 %}
+                                            <span>{{ meaning.meaning5 }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    <hr>
+                    </div>                    
+                {% endif %}                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block script %}
+    <script src="{{ url_for('static', filename='search.js') }}"></script>
+    <script src="{{ url_for('static', filename='allsockets.js') }}"></script>
+{% endblock %}
+
+{% block alerts %}
+    <div id="counter_div" style="display: none;">
+        <div>
+            New Messages
+        </div>
+        <div>
+            <span id="newPvtMsgs" style="color: green; font-weight: bold;"></span>
+        </div>
+    </div>
+{% endblock %}

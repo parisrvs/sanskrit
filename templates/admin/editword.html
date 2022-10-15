@@ -1,0 +1,200 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Edit Word ({{word.word}})
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block links %}
+    <a href="{{ url_for('homepage') }}">Homepage</a>&nbsp;&nbsp;
+    <a href="{{ url_for('contents') }}">Contents</a>&nbsp;&nbsp;
+    <a href="{{ url_for('notes') }}">Notes</a>&nbsp;&nbsp;
+    <a href="{{ url_for('search') }}">Search</a>
+{% endblock %}
+
+{% block body %}
+<div style="text-align: center;">
+    <h5>Edit Word - {{word.word}}</h5><br>
+    <div class="error_message">{{updateWordError}}</div>
+    <form action="{{ url_for('editword', word_id=word.id) }}" method="POST">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="chapter"><span class="requirement">*</span>Chapter #</label>
+                    <input type="text" class="form-control" id="chapter" name="chapter" autofocus value="{{word.chapter}}">
+                </div>
+                <div class="form-group">
+                    <label for="word"><span class="requirement">*</span>Word</label>
+                    <input type="text" class="form-control" id="word" name="word" autofocus value="{{word.word}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="meaning"><span class="requirement">*</span>Meaning</label>
+                    <input type="text" class="form-control" id="meaning" name="meaning" autofocus value="{{word.meaning}}">
+                </div>
+                <div class="form-group">
+                    <label for="gender"><span class="requirement">*</span>Gender</label>
+                    <input type="text" class="form-control" id="gender" name="gender" autofocus value="{{word.gender}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="form"><span class="requirement">*</span>Word Form</label>
+                    <input type="text" class="form-control" id="form" name="form" autofocus value="{{word.form}}">
+                </div>
+                <div class="form-group">
+                    <label for="info">Additional Info</label>
+                    <input type="text" class="form-control" id="info" name="info" autofocus value="{{word.info}}">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="nominative1"><span class="requirement">*</span>Nominative Singular</label>
+                    <input type="text" class="form-control" id="nominative1" name="nominative1" autofocus value="{{word.nominative1}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="nominative2"><span class="requirement">*</span>Nominative Dual</label>
+                    <input type="text" class="form-control" id="nominative2" name="nominative2" autofocus value="{{word.nominative2}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="nominative3"><span class="requirement">*</span>Nominative Plural</label>
+                    <input type="text" class="form-control" id="nominative3" name="nominative3" autofocus value="{{word.nominative3}}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="accusative1"><span class="requirement">*</span>Accusative Singular</label>
+                    <input type="text" class="form-control" id="accusative1" name="accusative1" autofocus value="{{word.accusative1}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="accusative2"><span class="requirement">*</span>Accusative Dual</label>
+                    <input type="text" class="form-control" id="accusative2" name="accusative2" autofocus value="{{word.accusative2}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="accusative3"><span class="requirement">*</span>Accusative Plural</label>
+                    <input type="text" class="form-control" id="accusative3" name="accusative3" autofocus value="{{word.accusative3}}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="instrumental1"><span class="requirement">*</span>Instrumental Singular</label>
+                    <input type="text" class="form-control" id="instrumental1" name="instrumental1" autofocus value="{{word.instrumental1}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="instrumental2"><span class="requirement">*</span>Instrumental Dual</label>
+                    <input type="text" class="form-control" id="instrumental2" name="instrumental2" autofocus value="{{word.instrumental2}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="instrumental3"><span class="requirement">*</span>Instrumental Plural</label>
+                    <input type="text" class="form-control" id="instrumental3" name="instrumental3" autofocus value="{{word.instrumental3}}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="dative1"><span class="requirement">*</span>Dative Singular</label>
+                    <input type="text" class="form-control" id="dative1" name="dative1" autofocus value="{{word.dative1}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="dative2"><span class="requirement">*</span>Dative Dual</label>
+                    <input type="text" class="form-control" id="dative2" name="dative2" autofocus value="{{word.dative2}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="dative3"><span class="requirement">*</span>Dative Plural</label>
+                    <input type="text" class="form-control" id="dative3" name="dative3" autofocus value="{{word.dative3}}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="ablative1"><span class="requirement">*</span>Ablative Singular</label>
+                    <input type="text" class="form-control" id="ablative1" name="ablative1" autofocus value="{{word.ablative1}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="ablative2"><span class="requirement">*</span>Ablative Dual</label>
+                    <input type="text" class="form-control" id="ablative2" name="ablative2" autofocus value="{{word.ablative2}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="ablative3"><span class="requirement">*</span>Ablative Plural</label>
+                    <input type="text" class="form-control" id="ablative3" name="ablative3" autofocus value="{{word.ablative3}}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="genitive1"><span class="requirement">*</span>Genitive Singular</label>
+                    <input type="text" class="form-control" id="genitive1" name="genitive1" autofocus value="{{word.genitive1}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="genitive2"><span class="requirement">*</span>Genitive Dual</label>
+                    <input type="text" class="form-control" id="genitive2" name="genitive2" autofocus value="{{word.genitive2}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="genitive3"><span class="requirement">*</span>Genitive Plural</label>
+                    <input type="text" class="form-control" id="genitive3" name="genitive3" autofocus value="{{word.genitive3}}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="locative1"><span class="requirement">*</span>Locative Singular</label>
+                    <input type="text" class="form-control" id="locative1" name="locative1" autofocus value="{{word.locative1}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="locative2"><span class="requirement">*</span>Locative Dual</label>
+                    <input type="text" class="form-control" id="locative2" name="locative2" autofocus value="{{word.locative2}}">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="locative3"><span class="requirement">*</span>Locative Plural</label>
+                    <input type="text" class="form-control" id="locative3" name="locative3" autofocus value="{{word.locative3}}">
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary">Update</button>
+    </form>
+    <div><a href="{{ url_for('chapter', chapter_id=word.chapter) }}">Cancel</a></div>
+    <div class="error_message">{{updateWordError}}</div>
+</div>
+{% endblock %}
